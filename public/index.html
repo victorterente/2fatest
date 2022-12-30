@@ -15,13 +15,13 @@
   <meta name="author" content="templatemo">
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,600,300' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="public/stylesheets/bootstrap.min.css">
-  <link rel="stylesheet" href="public/stylesheets/font-awesome.css">
-  <link rel="stylesheet" href="public/stylesheets/animate.css">
-  <link rel="stylesheet" href="public/stylesheets/templatemo_misc.css">
-  <link rel="stylesheet" href="public/stylesheets/templatemo_style.css">
-  <link rel="stylesheet" href="public/stylesheets/style.css">
-
+  <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" href="stylesheets/font-awesome.css">
+  <link rel="stylesheet" href="stylesheets/animate.css">
+  <link rel="stylesheet" href="stylesheets/templatemo_misc.css">
+  <link rel="stylesheet" href="stylesheets/templatemo_style.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script src="js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
 
 
 
@@ -92,12 +92,12 @@
         <div class="login-form">
           <div class="sign-in-htm">
             <div class="group">
-              <label for="user" class="label">Email</label>
-              <input id="email" name ="EmailForm" type="email" class="input">
+              <label for="email" class="label">Email</label>
+              <input id="email" name ="Email" type="email" class="input">
             </div>
             <div class="group">
               <label for="pass" class="label">Password</label>
-              <input id="pass" name ="PasswordForm" type="password" class="input" data-type="password">
+              <input id="pass" name ="Pass" type="password" class="input" data-type="password">
             </div>
             <div class="group">
               <input id="check" type="checkbox" class="check" checked>
@@ -114,6 +114,7 @@
             </div>
           </div>
           <div class="sign-up-htm">
+
 
             <div class="hr"></div>
             <div class="foot-lnk">
@@ -141,14 +142,55 @@
       </div> <!-- /.container -->
     </div> <!-- /.site-footer -->
 
-    <script src="js/vendor/jquery-1.11.0.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
-    <script src="js/bootstrap.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
 
 
-    <script src="public/javascripts/login.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      var PessoaId;
+
+      async function login() {
+        try {
+          let obj = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("pass").value,
+          };
+
+          let pessoa = await $.ajax({
+            url: "https://cors-anywhere.herokuapp.com/https://twofaapi.fly.dev/user/login1",
+            method: "post",
+            dataType: "json",
+            data: JSON.stringify(obj),
+            contentType: "application/json",
+          });
+
+          sessionStorage.setItem("PessoaId", JSON.stringify(pessoa.user_id));
+          PessoaId = sessionStorage.getItem("PessoaId", JSON.stringify(pessoa.user_id));
+
+          let pessoas = await $.ajax({
+            url: "https://cors-anywhere.herokuapp.com/https://twofaapi.fly.dev/user/"+PessoaId,
+            method: "get",
+            dataType: "json",
+            contentType: "application/json",
+          });
+
+          if(pessoas.user_secret == null){
+            window.location = "congratulations.html";
+          }
+          else{
+            let token = prompt("Please enter your token:");
+
+            if(pessoas.user_token == token){
+              window.location = "congratulations.html";
+            }
+            else{
+              alert("ERRRO")
+            }
+          }
+
+        } catch (err) {
+          document.getElementById("msg").innerText = err.responseJSON.msg;
+        }
+      }</script>
 
 
 
